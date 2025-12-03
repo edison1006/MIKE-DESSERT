@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Sweet Console</title>
+    <style>
+        /* --- 全局变量与重置 --- */
+        :root {
+            --bg-body: #161e2d;       /* 主背景 */
+            --bg-sidebar: #192130;    /* 侧边栏背景 */
+            --bg-card: #232f3e;       /* 卡片背景 */
+            --border-color: #3b4b5c;  
+            --accent-color: #FF9900;  /* AWS 橙 */
+            --text-primary: #ffffff;
+            --text-secondary: #919eab;
+            --skeleton-base: #232f3e;
+            --skeleton-shine: #2f3e52;
+            --console-font: "SF Mono", "Monaco", "Courier New", monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* 防止整页滚动，让内容区域滚动 */
+        }
+
+        /* --- 布局结构 (Sidebar + Main) --- */
+        .app-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- 1. 侧边栏 (Filters) --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .filter-option:hover {
+            background-color: #2c3849;
+        }
+
+        .filter-option.active {
+            color: var(--accent-color);
+            background-color: rgba(255, 153, 0, 0.1);
+            font-weight: 600;
+        }
+
+        .filter-icon {
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+
+        /* --- 2. 主内容区 --- */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto; /* 允许垂直滚动 */
+            position: relative;
+        }
+
+        /* --- 3. 终端打字机特效 --- */
+        .terminal-header {
+            margin-bottom: 30px;
+            font-family: var(--console-font);
+            height: 60px; /* 固定高度防止抖动 */
+        }
+        
+        .terminal-text {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 24px;
+            background-color: var(--accent-color);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- 4. 网格布局 --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- 卡片样式 (复用之前的) --- */
+        .product-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #00dbb3;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00dbb3;
+        }
+
+        .card-title {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .card-meta {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-family: var(--console-font);
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* --- 5. 骨架屏 (Skeleton Loading) --- */
+        .skeleton {
+            background: var(--skeleton-base);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            height: 220px; /* 卡片大致高度 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        /* 工具类：隐藏 */
+        .hidden { display: none !important; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <nav class="sidebar">
+        <div class="sidebar-title">Service Catalog</div>
+        <div class="filter-group">
+            <div class="filter-option active" onclick="filterProducts('all', this)">
+                <span class="filter-icon">📂</span> All Services
+            </div>
+            <div class="filter-option" onclick="filterProducts('cake', this)">
+                <span class="filter-icon">🍰</span> Compute (Cakes)
+            </div>
+            <div class="filter-option" onclick="filterProducts('drink', this)">
+                <span class="filter-icon">☕</span> Network (Drinks)
+            </div>
+            <div class="filter-option" onclick="filterProducts('cookie', this)">
+                <span class="filter-icon">🍪</span> Storage (Cookies)
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="terminal-header">
+            <span id="typewriter" class="terminal-text"></span><span class="cursor"></span>
+        </div>
+
+        <div id="grid-container" class="products-grid">
+            </div>
+    </main>
+</div>
+
+<script>
+    // --- 模拟后端数据 ---
+    const products = [
+        { id: 1, type: 'cake', title: 'Tiramisu Core', desc: 'Enterprise-grade espresso soaked layers with high-availability Mascarpone.', region: 'us-east-1' },
+        { id: 2, type: 'cake', title: 'Matcha Layer v2', desc: 'Low-latency silk texture powered by Kyoto Uji Protocol.', region: 'ap-northeast-1' },
+        { id: 3, type: 'drink', title: 'Latte Flow', desc: 'Real-time liquid streaming service with micro-foam architecture.', region: 'eu-west-2' },
+        { id: 4, type: 'cookie', title: 'Macaron Nodes', desc: 'Distributed sweet clusters. Lightweight and colorful payload.', region: 'fr-central-1' },
+        { id: 5, type: 'drink', title: 'Cold Brew S3', desc: 'Scalable Simple Sipping Service. Steeped for 12 hours.', region: 'us-west-1' },
+        { id: 6, type: 'cake', title: 'Lava Cake Lambda', desc: 'Serverless chocolate core that executes on heat trigger.', region: 'sa-east-1' }
+    ];
+
+    // --- DOM 元素 ---
+    const gridContainer = document.getElementById('grid-container');
+    const typewriterElement = document.getElementById('typewriter');
+    const headerText = "> Initializing SugarOS... Loading Patisserie Modules...";
+
+    // --- 1. 终端打字机特效逻辑 ---
+    function startTypewriter() {
+        let i = 0;
+        const speed = 50; // 打字速度
+
+        function type() {
+            if (i < headerText.length) {
+                typewriterElement.innerHTML += headerText.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    // --- 2. 骨架屏逻辑 ---
+    function renderSkeletons() {
+        gridContainer.innerHTML = '';
+        // 生成6个骨架占位符
+        for (let i = 0; i < 6; i++) {
+            const skel = document.createElement('div');
+            skel.className = 'skeleton';
+            gridContainer.appendChild(skel);
+        }
+    }
+
+    // --- 3. 渲染真实卡片逻辑 ---
+    function renderProducts(filterType = 'all') {
+        gridContainer.innerHTML = ''; // 清空骨架
+
+        products.forEach(product => {
+            // 筛选逻辑
+            if (filterType !== 'all' && product.type !== filterType) return;
+
+            // 创建卡片 HTML
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <span style="font-size:12px; font-family:var(--console-font); color:#00dbb3;">Running</span>
+                    <div class="status-dot"></div>
+                </div>
+                <h3 class="card-title">${product.title}</h3>
+                <p class="card-desc">${product.desc}</p>
+                <div class="card-meta">
+                    <span>Type: ${product.type.toUpperCase()}</span>
+                    <span>${product.region}</span>
+                </div>
+            `;
+            gridContainer.appendChild(card);
+        });
+    }
+
+    // --- 4. 筛选交互逻辑 ---
+    window.filterProducts = function(type, element) {
+        // 更新侧边栏激活状态
+        document.querySelectorAll('.filter-option').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        // 重新渲染产品 (不带延迟，模拟本地瞬时筛选)
+        renderProducts(type);
+    }
+
+    // --- 5. 初始化 (Boot Sequence) ---
+    function init() {
+        startTypewriter(); // 1. 开始打字
+        renderSkeletons(); // 2. 显示骨架
+
+        // 模拟 API 请求延迟 (2秒后显示内容)
+        setTimeout(() => {
+            renderProducts('all'); // 3. 替换为真内容
+            
+            // 改变标题文字表示加载完成
+            setTimeout(() => {
+                typewriterElement.innerHTML = "> Welcome to AWS (Amazing Waffle Services).";
+            }, 1000);
+            
+        }, 2500); 
+    }
+
+    // 启动！
+    init();
+
+</script>
+</body>
+</html>
