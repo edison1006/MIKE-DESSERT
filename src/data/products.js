@@ -10,9 +10,18 @@ export const shopDetails = {
 
 export const products = [
   {
+    name: 'Strawberry Matcha Mont Blanc',
+    description:
+      'Layers of Strawberry, Mascarpone Cream, Vanilla Sponge, Matcha Gelato & Matcha and Chestnut Mont Blanc Topping.',
+    price: 'NT$320',
+    tags: ['signature', 'seasonal', 'best seller'],
+    accent: '#4caf50',
+    category: 'Individual',
+  },
+  {
     name: 'Earl Grey Cloud Cake',
     description:
-      'Whipped bergamot chantilly layered with chiffon and lemon confit pearls.',
+      'Whipped Bergamot Chantilly, Vanilla Chiffon Layers, Lemon Confit Pearls, and Earl Grey Infused Cream.',
     price: 'NT$980 · 6"',
     tags: ['signature', 'light cream', 'contains gluten'],
     accent: '#d7c6b6',
@@ -21,7 +30,7 @@ export const products = [
   {
     name: 'Matcha Velvet Bar',
     description:
-      'Ceremonial Uji matcha mousse, almond biscuit base, yuzu gelée core.',
+      'Ceremonial Uji Matcha Mousse, Almond Biscuit Base, Yuzu Gelée Core, and Matcha Powder Dusting.',
     price: 'NT$180 / slice',
     tags: ['best seller', 'gluten free', 'citrus'],
     accent: '#cfd8c0',
@@ -30,7 +39,7 @@ export const products = [
   {
     name: 'Valrhona Noir Tart',
     description:
-      '70% Guanaja ganache with smoked salt caramel and cacao nib crunch.',
+      '70% Guanaja Dark Chocolate Ganache, Smoked Salt Caramel, Cacao Nib Crunch, and Chocolate Tart Shell.',
     price: 'NT$220 / slice',
     tags: ['rich', 'dark chocolate'],
     accent: '#bda79b',
@@ -39,7 +48,7 @@ export const products = [
   {
     name: 'Rose Lychee Entremet',
     description:
-      'Lychee compote, raspberry crémeux, rose diplomat cream in glossy glaze.',
+      'Lychee Compote, Raspberry Crémeux, Rose Diplomat Cream, Glossy Mirror Glaze, and Vanilla Sponge Base.',
     price: 'NT$1,180 · 6"',
     tags: ['limited', 'floral', 'fruit forward'],
     accent: '#f1d6d0',
@@ -48,7 +57,7 @@ export const products = [
   {
     name: 'Kinako Honey Financier',
     description:
-      'Brown butter almond cakes brushed with mountain honey and kinako sugar.',
+      'Brown Butter Almond Cakes, Mountain Honey Glaze, Kinako Sugar Coating, and Toasted Sesame Seeds.',
     price: 'NT$360 · box of 6',
     tags: ['pastry box', 'nutty', 'snacking'],
     accent: '#e6cfae',
@@ -57,7 +66,7 @@ export const products = [
   {
     name: 'Coconut Mango Verrine',
     description:
-      'Layers of coconut diplomat, mango passion fruit curd, crispy sable.',
+      'Layers of Coconut Diplomat, Mango Passion Fruit Curd, Crispy Sable Crumbs, and Fresh Mango Cubes.',
     price: 'NT$200 / cup',
     tags: ['tropical', 'chilled'],
     accent: '#f3dda9',
@@ -66,7 +75,7 @@ export const products = [
   {
     name: 'Toasted Sesame Paris-Brest',
     description:
-      'Sesame praline mousseline, cassis gelée, caramelized pâte à choux crown.',
+      'Sesame Praline Mousseline, Cassis Gelée, Caramelized Pâte à Choux Crown, and Toasted Sesame Seeds.',
     price: 'NT$320',
     tags: ['seasonal', 'textural'],
     accent: '#d9c2a9',
@@ -75,7 +84,7 @@ export const products = [
   {
     name: 'Black Sugar Basque',
     description:
-      'Silky cheesecake caramelized with Okinawan black sugar crust.',
+      'Silky Cheesecake, Okinawan Black Sugar Caramelization, Vanilla Bean Infusion, and Graham Cracker Crust.',
     price: 'NT$1,080 · 6"',
     tags: ['comfort', 'caramelized'],
     accent: '#c7a693',
