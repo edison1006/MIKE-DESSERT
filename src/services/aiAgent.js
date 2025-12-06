@@ -1,4 +1,5 @@
 import { products, shopDetails } from '../data/products';
+import { chatbotAPI } from './api';
 
 // AI Agent 知识库
 const knowledgeBase = {
@@ -68,48 +69,62 @@ const detectIntent = (message) => {
 };
 
 // AI Agent 响应生成
-export const generateAIResponse = async (userMessage, language = 'en') => {
-  // 模拟API延迟
-  await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 400));
+export const generateAIResponse = async (userMessage, language = 'en', sessionId = null) => {
+  try {
+    // 尝试调用后端 API
+    const result = await chatbotAPI.chat(userMessage, language, sessionId);
+    return result.response;
+  } catch (error) {
+    // 如果后端不可用，使用本地逻辑作为后备
+    console.warn('Backend API unavailable, using local fallback:', error);
+    
+    // 模拟API延迟
+    await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 400));
 
-  const intent = detectIntent(userMessage);
-  
-  let response = '';
+    const intent = detectIntent(userMessage);
+    
+    let response = '';
 
-  switch (intent.type) {
-    case 'faq':
-      response = intent.data.answer(language);
-      break;
-      
-    case 'product':
-      const product = intent.data;
-      response = `Great choice! ${product.name} is ${product.description}. It's priced at ${product.price}. Would you like to know more about this item or place an order?`;
-      break;
-      
-    case 'general':
-      if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
-        response = `Hello! I'm Mika Dessert's AI assistant. I can help you with product information, pricing, ordering, and more. What would you like to know?`;
-      } else if (userMessage.toLowerCase().includes('thank')) {
-        response = `You're welcome! Is there anything else I can help you with?`;
-      } else {
-        response = `I understand you're asking about "${userMessage}". Let me help! You can ask me about our products, prices, opening hours, custom orders, or anything else about Mika Dessert. What would you like to know?`;
-      }
-      break;
+    switch (intent.type) {
+      case 'faq':
+        response = intent.data.answer(language);
+        break;
+        
+      case 'product':
+        const product = intent.data;
+        response = `Great choice! ${product.name} is ${product.description}. It's priced at ${product.price}. Would you like to know more about this item or place an order?`;
+        break;
+        
+      case 'general':
+        if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+          response = `Hello! I'm Mika Dessert's AI assistant. I can help you with product information, pricing, ordering, and more. What would you like to know?`;
+        } else if (userMessage.toLowerCase().includes('thank')) {
+          response = `You're welcome! Is there anything else I can help you with?`;
+        } else {
+          response = `I understand you're asking about "${userMessage}". Let me help! You can ask me about our products, prices, opening hours, custom orders, or anything else about Mika Dessert. What would you like to know?`;
+        }
+        break;
+    }
+
+    return response;
   }
-
-  return response;
 };
 
 // 获取欢迎消息
-export const getWelcomeMessage = (language = 'en') => {
-  const messages = {
-    en: "Hello! I'm Mika Dessert's AI assistant. How can I help you today? I can answer questions about our products, prices, ordering, and more!",
-    zh: '您好！我是 Mika Dessert 的AI助手。今天我能为您做些什么？我可以回答关于产品、价格、订购等问题！',
-    mi: 'Kia ora! Ko au te kaiāwhina AI o Mika Dessert. Me pēhea taku āwhina i a koe? Ka taea e au te whakautu pātai mō ā mātou hua, utu, whakatau, me ētahi atu!',
-    ko: '안녕하세요! Mika Dessert의 AI 어시스턴트입니다. 오늘 무엇을 도와드릴까요? 제품, 가격, 주문 등에 대해 답변해드릴 수 있습니다!',
-    ja: 'こんにちは！Mika DessertのAIアシスタントです。今日はどのようにお手伝いできますか？製品、価格、注文などについてお答えできます！',
-  };
-  
-  return messages[language] || messages.en;
+export const getWelcomeMessage = async (language = 'en') => {
+  try {
+    const result = await chatbotAPI.getWelcomeMessage(language);
+    return result.message;
+  } catch (error) {
+    // 如果后端不可用，使用本地消息
+    const messages = {
+      en: "Hello! I'm Mika Dessert's AI assistant. How can I help you today? I can answer questions about our products, prices, ordering, and more!",
+      zh: '您好！我是 Mika Dessert 的AI助手。今天我能为您做些什么？我可以回答关于产品、价格、订购等问题！',
+      mi: 'Kia ora! Ko au te kaiāwhina AI o Mika Dessert. Me pēhea taku āwhina i a koe? Ka taea e au te whakautu pātai mō ā mātou hua, utu, whakatau, me ētahi atu!',
+      ko: '안녕하세요! Mika Dessert의 AI 어시스턴트입니다. 오늘 무엇을 도와드릴까요? 제품, 가격, 주문 등에 대해 답변해드릴 수 있습니다!',
+      ja: 'こんにちは！Mika DessertのAIアシスタントです。今日はどのようにお手伝いできますか？製品、価格、注文などについてお答えできます！',
+    };
+    return messages[language] || messages.en;
+  }
 };
 

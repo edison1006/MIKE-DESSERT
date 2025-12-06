@@ -12,10 +12,13 @@ const ChatBot = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  const [sessionId, setSessionId] = useState(null);
+
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      const welcomeMsg = getWelcomeMessage(language);
-      setMessages([{ type: 'bot', text: welcomeMsg, timestamp: new Date() }]);
+      getWelcomeMessage(language).then((welcomeMsg) => {
+        setMessages([{ type: 'bot', text: welcomeMsg, timestamp: new Date() }]);
+      });
     }
   }, [isOpen, language]);
 
@@ -39,7 +42,11 @@ const ChatBot = () => {
     setIsTyping(true);
 
     try {
-      const botResponse = await generateAIResponse(userMessage, language);
+      const result = await generateAIResponse(userMessage, language, sessionId);
+      const botResponse = typeof result === 'string' ? result : result.response;
+      if (result.session_id && !sessionId) {
+        setSessionId(result.session_id);
+      }
       setMessages((prev) => [...prev, { type: 'bot', text: botResponse, timestamp: new Date() }]);
     } catch (error) {
       setMessages((prev) => [

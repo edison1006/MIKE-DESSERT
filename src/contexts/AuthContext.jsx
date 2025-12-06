@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI, getToken } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -15,65 +16,49 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // 从 localStorage 加载用户信息
-    const savedUser = localStorage.getItem('mikaDessertUser');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('mikaDessertUser');
-      }
+    // 从后端验证 token 并获取用户信息
+    const token = getToken();
+    if (token) {
+      authAPI.getCurrentUser()
+        .then((userData) => {
+          setUser(userData);
+        })
+        .catch((error) => {
+          console.error('Error fetching user:', error);
+          // Token 无效，清除
+          authAPI.logout();
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
-  const register = (email, password, name) => {
-    // 检查用户是否已存在
-    const users = JSON.parse(localStorage.getItem('mikaDessertUsers') || '[]');
-    const existingUser = users.find((u) => u.email === email);
-    
-    if (existingUser) {
-      throw new Error('Email already registered');
+  const register = async (email, password, name) => {
+    try {
+      const data = await authAPI.register(email, password, name);
+      setUser(data.user);
+      return data.user;
+    } catch (error) {
+      throw error;
     }
-
-    // 创建新用户
-    const newUser = {
-      id: Date.now().toString(),
-      email,
-      name,
-      createdAt: new Date().toISOString(),
-    };
-
-    // 保存用户到列表（实际应用中密码应该加密）
-    users.push({ ...newUser, password });
-    localStorage.setItem('mikaDessertUsers', JSON.stringify(users));
-
-    // 登录新用户
-    setUser(newUser);
-    localStorage.setItem('mikaDessertUser', JSON.stringify(newUser));
-
-    return newUser;
   };
 
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem('mikaDessertUsers') || '[]');
-    const user = users.find((u) => u.email === email && u.password === password);
-
-    if (!user) {
-      throw new Error('Invalid email or password');
+  const login = async (email, password) => {
+    try {
+      const data = await authAPI.login(email, password);
+      setUser(data.user);
+      return data.user;
+    } catch (error) {
+      throw error;
     }
-
-    const { password: _, ...userWithoutPassword } = user;
-    setUser(userWithoutPassword);
-    localStorage.setItem('mikaDessertUser', JSON.stringify(userWithoutPassword));
-
-    return userWithoutPassword;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mikaDessertUser');
+    authAPI.logout();
   };
 
   const value = {
