@@ -26,6 +26,13 @@ export const translations = {
       dontHaveAccount: "Don't have an account?",
       alreadyHaveAccount: 'Already have an account?',
     },
+    chatbot: {
+      title: 'Mika Dessert AI Assistant',
+      status: 'Online',
+      placeholder: 'Type your message...',
+      openChat: 'Open chat',
+      closeChat: 'Close chat',
+    },
   },
   zh: {
     nav: {
@@ -53,6 +60,13 @@ export const translations = {
       createAccount: '创建账户',
       dontHaveAccount: '还没有账户？',
       alreadyHaveAccount: '已有账户？',
+    },
+    chatbot: {
+      title: 'Mika Dessert AI 助手',
+      status: '在线',
+      placeholder: '输入您的消息...',
+      openChat: '打开聊天',
+      closeChat: '关闭聊天',
     },
   },
   mi: {
@@ -82,6 +96,13 @@ export const translations = {
       dontHaveAccount: 'Kāore anō koe i te pūkete?',
       alreadyHaveAccount: 'Kei a koe tētahi pūkete?',
     },
+    chatbot: {
+      title: 'Mika Dessert AI Kaiāwhina',
+      status: 'I runga',
+      placeholder: 'Tuhia tō karere...',
+      openChat: 'Whakatuwhera kōrero',
+      closeChat: 'Kati kōrero',
+    },
   },
   ko: {
     nav: {
@@ -110,6 +131,13 @@ export const translations = {
       dontHaveAccount: '계정이 없으신가요?',
       alreadyHaveAccount: '이미 계정이 있으신가요?',
     },
+    chatbot: {
+      title: 'Mika Dessert AI 어시스턴트',
+      status: '온라인',
+      placeholder: '메시지를 입력하세요...',
+      openChat: '채팅 열기',
+      closeChat: '채팅 닫기',
+    },
   },
   ja: {
     nav: {
@@ -137,6 +165,13 @@ export const translations = {
       createAccount: 'アカウント作成',
       dontHaveAccount: 'アカウントをお持ちでないですか？',
       alreadyHaveAccount: 'すでにアカウントをお持ちですか？',
+    },
+    chatbot: {
+      title: 'Mika Dessert AIアシスタント',
+      status: 'オンライン',
+      placeholder: 'メッセージを入力...',
+      openChat: 'チャットを開く',
+      closeChat: 'チャットを閉じる',
     },
   },
 };
