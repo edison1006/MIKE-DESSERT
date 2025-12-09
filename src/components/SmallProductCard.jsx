@@ -16,3 +16,6 @@ const SmallProductCard = ({ product }) => (
 export default SmallProductCard;
 
 
+
+
+
