@@ -83,14 +83,4 @@ class OrderItem(Base):
     order = relationship("Order", back_populates="items")
     product = relationship("Product", back_populates="order_items")
 
-class ChatMessage(Base):
-    __tablename__ = "chat_messages"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
-    session_id = Column(String(255), nullable=True, index=True)  # For guest user sessions
-    message = Column(Text, nullable=False)
-    response = Column(Text, nullable=True)
-    language = Column(String(10), default="en", nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 

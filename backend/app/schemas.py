@@ -107,25 +107,8 @@ class OrderUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
 
-# Chatbot Schemas
-class ChatMessageCreate(BaseModel):
-    message: str
-    language: str = "en"
-    session_id: Optional[str] = None
 
-class ChatMessageResponse(BaseModel):
-    id: int
-    message: str
-    response: Optional[str] = None
-    language: str
-    created_at: datetime
-    
-    class Config:
-        from_attributes = True
 
-class ChatResponse(BaseModel):
-    response: str
-    session_id: str
 
 
 

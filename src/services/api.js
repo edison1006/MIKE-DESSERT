@@ -111,21 +111,9 @@ export const ordersAPI = {
   },
 };
 
-// AI 客服 API
-export const chatbotAPI = {
-  chat: async (message, language = 'en', sessionId = null) => {
-    return apiRequest('/api/chatbot/chat', {
-      method: 'POST',
-      body: JSON.stringify({ message, language, session_id: sessionId }),
-    });
-  },
-
-  getWelcomeMessage: async (language = 'en') => {
-    return apiRequest(`/api/chatbot/welcome?language=${language}`);
-  },
-};
-
 export { getToken, setToken, clearToken };
+
+
 
 
 

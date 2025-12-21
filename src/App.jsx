@@ -7,7 +7,6 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import SiteHeader from './components/SiteHeader';
 import SiteFooter from './components/SiteFooter';
-import ChatBot from './components/ChatBot';
 
 const App = () => (
   <LanguageProvider>
@@ -24,7 +23,6 @@ const App = () => (
             </Routes>
           </main>
           <SiteFooter />
-          <ChatBot />
         </div>
       </BrowserRouter>
     </AuthProvider>
